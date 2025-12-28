@@ -46,7 +46,12 @@ def action_extensions(base_actions, project_path=os.getcwd()):
         "dog_detect",
     }
 
-    EXAMPLES = {"human_face_recognition", "object_detect", "qrcode_recognition"}
+    EXAMPLES = {
+        "human_face_recognition",
+        "object_detect",
+        "qrcode_recognition",
+        "ultra_lightweight_human_detection",
+    }
 
     def get_value_from_cache_or_env(key, global_args):
         regex = compile(rf"^{key}=.*")

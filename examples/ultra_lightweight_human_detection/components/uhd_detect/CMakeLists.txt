@@ -1,0 +1,36 @@
+set(srcs uhd_detect.cpp)
+
+set(include_dirs .)
+
+set(requires espressif__esp-dl)
+
+set(UHD_MODEL "w64" CACHE STRING "UHD model variant (w64, w40, w32, w24, or w16)")
+
+if(UHD_MODEL STREQUAL "w40")
+    set(model_dir ${CMAKE_CURRENT_LIST_DIR}/../../../../models/uhd/ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_espdl)
+    set(model_name ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost)
+    set(model_define UHD_MODEL_W40)
+elseif(UHD_MODEL STREQUAL "w32")
+    set(model_dir ${CMAKE_CURRENT_LIST_DIR}/../../../../models/uhd/ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_espdl)
+    set(model_name ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost)
+    set(model_define UHD_MODEL_W32)
+elseif(UHD_MODEL STREQUAL "w24")
+    set(model_dir ${CMAKE_CURRENT_LIST_DIR}/../../../../models/uhd/ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_espdl)
+    set(model_name ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost)
+    set(model_define UHD_MODEL_W24)
+elseif(UHD_MODEL STREQUAL "w16")
+    set(model_dir ${CMAKE_CURRENT_LIST_DIR}/../../../../models/uhd/ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_espdl)
+    set(model_name ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost)
+    set(model_define UHD_MODEL_W16)
+elseif(UHD_MODEL STREQUAL "w64")
+    set(model_dir ${CMAKE_CURRENT_LIST_DIR}/../../../../models/uhd/ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_espdl)
+    set(model_name ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost)
+    set(model_define UHD_MODEL_W64)
+else()
+    message(FATAL_ERROR "Unknown UHD_MODEL='${UHD_MODEL}'. Use w64, w40, w32, w24, or w16.")
+endif()
+
+set(model_path ${model_dir}/${model_name}.espdl)
+
+idf_component_register(SRCS ${srcs} INCLUDE_DIRS ${include_dirs} REQUIRES ${requires} EMBED_FILES ${model_path})
+target_compile_definitions(${COMPONENT_LIB} PRIVATE ${model_define})
