@@ -5,6 +5,7 @@
 #include "dl_model_base.hpp"
 #include "dl_tensor_base.hpp"
 
+#include <cstddef>
 #include <list>
 #include <string>
 #include <vector>
@@ -43,11 +44,19 @@ private:
     };
 
     bool prepare_input(const dl::image::img_t &img);
-    void decode_output(const dl::TensorBase &output, int img_w, int img_h);
+    void decode_output_split(const dl::TensorBase &box,
+                             const dl::TensorBase &quality,
+                             const dl::TensorBase &obj,
+                             const dl::TensorBase &cls,
+                             int img_w,
+                             int img_h);
     void apply_nms(std::vector<CandidateBox> &boxes);
 
     InputMode m_input_mode;
     dl::Model *m_model;
+    const uint8_t *m_model_data;
+    size_t m_model_size;
+    bool m_model_data_owned;
     dl::image::ImageTransformer m_transformer;
     std::vector<uint8_t> m_rgb888;
     std::vector<int8_t> m_input;

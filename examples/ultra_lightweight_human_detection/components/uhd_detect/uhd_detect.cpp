@@ -2,12 +2,14 @@
 #include "uhd_constants.hpp"
 
 #include "dl_image_define.hpp"
+#include "esp_heap_caps.h"
 #include "esp_log.h"
 #include "esp_timer.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 
 namespace {
 static const char *TAG = "UHDDetect";
@@ -19,8 +21,15 @@ constexpr int kInputExp = -7;
 constexpr int kTopKDefault = 100;
 constexpr float kScoreThrDefault = 0.05f;
 constexpr float kNmsThrDefault = 0.45f;
-constexpr bool kHasQuality = true;
-constexpr const char *kOutputName = "txtywh_obj_quality_cls_x8";
+constexpr const char *kOutputBoxName = "box";
+constexpr const char *kOutputQualityName = "quality";
+constexpr const char *kOutputObjName = "obj";
+constexpr const char *kOutputClsName = "cls";
+
+enum class OutputLayout {
+    NCHW,
+    NHWC,
+};
 
 #if defined(UHD_MODEL_W16)
 extern const uint8_t ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_espdl_start[]
@@ -39,13 +48,14 @@ constexpr const uint8_t *kModelStart =
     ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_espdl_start;
 constexpr const uint8_t *kModelEnd = ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_espdl_end;
 #elif defined(UHD_MODEL_W32)
-extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_espdl_start[]
-    asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_espdl_start");
-extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_espdl_end[]
-    asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_espdl_end");
+extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end");
 constexpr const uint8_t *kModelStart =
-    ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_espdl_start;
-constexpr const uint8_t *kModelEnd = ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_espdl_end;
+    ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #elif defined(UHD_MODEL_W40)
 extern const uint8_t ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_espdl_start[]
     asm("_binary_ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_espdl_start");
@@ -107,6 +117,52 @@ float clamp01(float x)
     return x;
 }
 
+float get_tensor_value(const dl::TensorBase &tensor, int idx)
+{
+    float scale = 1.0f;
+    if (tensor.dtype == dl::DATA_TYPE_INT8 || tensor.dtype == dl::DATA_TYPE_INT16) {
+        scale = std::ldexp(1.0f, tensor.exponent);
+    }
+
+    if (tensor.dtype == dl::DATA_TYPE_INT8) {
+        const int8_t *data = static_cast<const int8_t *>(tensor.data);
+        return dl::dequantize<int8_t, float>(data[idx], scale);
+    }
+    if (tensor.dtype == dl::DATA_TYPE_INT16) {
+        const int16_t *data = static_cast<const int16_t *>(tensor.data);
+        return dl::dequantize<int16_t, float>(data[idx], scale);
+    }
+    if (tensor.dtype == dl::DATA_TYPE_FLOAT) {
+        const float *data = static_cast<const float *>(tensor.data);
+        return data[idx];
+    }
+    return 0.0f;
+}
+
+float get_tensor_value(const dl::TensorBase &tensor, OutputLayout layout, int channel, int y, int x)
+{
+    if (tensor.shape.size() != 4) {
+        return 0.0f;
+    }
+
+    int h = 0;
+    int w = 0;
+    int c = 0;
+    if (layout == OutputLayout::NCHW) {
+        c = tensor.shape[1];
+        h = tensor.shape[2];
+        w = tensor.shape[3];
+        int idx = (channel * h + y) * w + x;
+        return get_tensor_value(tensor, idx);
+    }
+
+    h = tensor.shape[1];
+    w = tensor.shape[2];
+    c = tensor.shape[3];
+    int idx = (y * w + x) * c + channel;
+    return get_tensor_value(tensor, idx);
+}
+
 } // namespace
 
 namespace who {
@@ -115,19 +171,46 @@ namespace uhd {
 UHDDetect::UHDDetect(InputMode mode) :
     m_input_mode(mode),
     m_model(nullptr),
+    m_model_data(nullptr),
+    m_model_size(0),
+    m_model_data_owned(false),
     m_rgb888(kInputWidth * kInputHeight * kInputChannels),
     m_input(kInputWidth * kInputHeight * kInputChannels),
     m_score_thr(kScoreThrDefault),
     m_nms_thr(kNmsThrDefault),
     m_top_k(kTopKDefault)
 {
-    (void)kModelEnd;
-    m_model = new dl::Model(reinterpret_cast<const char *>(kModelStart),
+    m_model_size = static_cast<size_t>(kModelEnd - kModelStart);
+    m_model_data = kModelStart;
+    if (m_model_size == 0) {
+        ESP_LOGE(TAG, "model size is zero");
+        return;
+    }
+
+    uintptr_t model_addr = reinterpret_cast<uintptr_t>(kModelStart);
+    if ((model_addr & 0x0F) != 0) {
+        uint8_t *aligned = static_cast<uint8_t *>(
+            heap_caps_aligned_alloc(16, m_model_size, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT));
+        if (!aligned) {
+            aligned = static_cast<uint8_t *>(heap_caps_aligned_alloc(16, m_model_size, MALLOC_CAP_8BIT));
+        }
+        if (!aligned) {
+            ESP_LOGE(TAG, "failed to allocate aligned model buffer (%zu bytes)", m_model_size);
+            return;
+        }
+        std::memcpy(aligned, kModelStart, m_model_size);
+        m_model_data = aligned;
+        m_model_data_owned = true;
+        ESP_LOGW(TAG, "model data copied to aligned buffer");
+    }
+
+    bool param_copy = m_model_data_owned;
+    m_model = new dl::Model(reinterpret_cast<const char *>(m_model_data),
                             fbs::MODEL_LOCATION_IN_FLASH_RODATA,
                             0,
                             dl::MEMORY_MANAGER_GREEDY,
                             nullptr,
-                            false);
+                            param_copy);
     if (!m_model->get_input()) {
         ESP_LOGE(TAG, "model input is nullptr");
     }
@@ -136,6 +219,9 @@ UHDDetect::UHDDetect(InputMode mode) :
 UHDDetect::~UHDDetect()
 {
     delete m_model;
+    if (m_model_data_owned && m_model_data) {
+        heap_caps_free(const_cast<uint8_t *>(m_model_data));
+    }
 }
 
 std::list<dl::detect::result_t> &UHDDetect::run(const dl::image::img_t &img)
@@ -156,16 +242,16 @@ std::list<dl::detect::result_t> &UHDDetect::run(const dl::image::img_t &img)
     m_model->run(&input_tensor);
     int64_t t_infer = esp_timer_get_time();
 
-    dl::TensorBase *output = m_model->get_output(kOutputName);
-    if (!output) {
-        output = m_model->get_output();
-    }
-    if (!output) {
-        ESP_LOGE(TAG, "model output is nullptr");
+    dl::TensorBase *box = m_model->get_output(kOutputBoxName);
+    dl::TensorBase *quality = m_model->get_output(kOutputQualityName);
+    dl::TensorBase *obj = m_model->get_output(kOutputObjName);
+    dl::TensorBase *cls = m_model->get_output(kOutputClsName);
+
+    if (!box || !quality || !obj || !cls) {
+        ESP_LOGE(TAG, "model outputs are nullptr");
         return m_results;
     }
-
-    decode_output(*output, img.width, img.height);
+    decode_output_split(*box, *quality, *obj, *cls, img.width, img.height);
     int64_t t_post = esp_timer_get_time();
 
     static int log_counter = 0;
@@ -268,58 +354,69 @@ bool UHDDetect::prepare_input(const dl::image::img_t &img)
     return true;
 }
 
-void UHDDetect::decode_output(const dl::TensorBase &output, int img_w, int img_h)
+void UHDDetect::decode_output_split(const dl::TensorBase &box,
+                                    const dl::TensorBase &quality,
+                                    const dl::TensorBase &obj,
+                                    const dl::TensorBase &cls,
+                                    int img_w,
+                                    int img_h)
 {
-    if (output.shape.size() != 4) {
+    if (box.shape.size() != 4 || quality.shape.size() != 4 || obj.shape.size() != 4 || cls.shape.size() != 4) {
         ESP_LOGE(TAG, "unexpected output dims");
         return;
     }
 
-    const int b = output.shape[0];
-    const int c = output.shape[1];
-    const int h = output.shape[2];
-    const int w = output.shape[3];
+    OutputLayout layout = OutputLayout::NCHW;
+    int h = 0;
+    int w = 0;
+    int box_channels = 0;
+    if (box.shape[1] == constants::kNumAnchors * 4) {
+        layout = OutputLayout::NCHW;
+        h = box.shape[2];
+        w = box.shape[3];
+        box_channels = box.shape[1];
+    } else if (box.shape[3] == constants::kNumAnchors * 4) {
+        layout = OutputLayout::NHWC;
+        h = box.shape[1];
+        w = box.shape[2];
+        box_channels = box.shape[3];
+    } else {
+        ESP_LOGE(TAG, "invalid box output shape");
+        return;
+    }
 
-    if (b != 1 || h <= 0 || w <= 0 || c <= 0) {
-        ESP_LOGE(TAG, "invalid output shape");
+    int obj_h = (layout == OutputLayout::NCHW) ? obj.shape[2] : obj.shape[1];
+    int obj_w = (layout == OutputLayout::NCHW) ? obj.shape[3] : obj.shape[2];
+    int obj_c = (layout == OutputLayout::NCHW) ? obj.shape[1] : obj.shape[3];
+    int quality_h = (layout == OutputLayout::NCHW) ? quality.shape[2] : quality.shape[1];
+    int quality_w = (layout == OutputLayout::NCHW) ? quality.shape[3] : quality.shape[2];
+    int quality_c = (layout == OutputLayout::NCHW) ? quality.shape[1] : quality.shape[3];
+    int cls_h = (layout == OutputLayout::NCHW) ? cls.shape[2] : cls.shape[1];
+    int cls_w = (layout == OutputLayout::NCHW) ? cls.shape[3] : cls.shape[2];
+    int cls_c = (layout == OutputLayout::NCHW) ? cls.shape[1] : cls.shape[3];
+
+    if (h <= 0 || w <= 0 || obj_h != h || obj_w != w || quality_h != h || quality_w != w || cls_h != h ||
+        cls_w != w) {
+        ESP_LOGE(TAG, "output shape mismatch");
         return;
     }
 
     const int num_anchors = constants::kNumAnchors;
-    if (c % num_anchors != 0) {
-        ESP_LOGE(TAG, "channel/anchor mismatch: c=%d anchors=%d", c, num_anchors);
+    if (box_channels % num_anchors != 0 || obj_c % num_anchors != 0 || quality_c % num_anchors != 0 ||
+        cls_c % num_anchors != 0) {
+        ESP_LOGE(TAG, "channel/anchor mismatch");
         return;
     }
 
-    const int per_anchor = c / num_anchors;
-    const int quality_extra = (kHasQuality && per_anchor >= 6) ? 1 : 0;
-    const int num_classes = per_anchor - 5 - quality_extra;
-    if (num_classes <= 0) {
-        ESP_LOGE(TAG, "invalid class count: %d", num_classes);
+    const int box_per_anchor = box_channels / num_anchors;
+    if (box_per_anchor < 4) {
+        ESP_LOGE(TAG, "invalid box channel count");
         return;
     }
 
-    float scale = 1.0f;
-    if (output.dtype == dl::DATA_TYPE_INT8 || output.dtype == dl::DATA_TYPE_INT16) {
-        scale = std::ldexp(1.0f, output.exponent);
-    }
-
-    auto get_val = [&](int channel, int y, int x) -> float {
-        int idx = (channel * h + y) * w + x;
-        if (output.dtype == dl::DATA_TYPE_INT8) {
-            const int8_t *data = static_cast<const int8_t *>(output.data);
-            return dl::dequantize<int8_t, float>(data[idx], scale);
-        }
-        if (output.dtype == dl::DATA_TYPE_INT16) {
-            const int16_t *data = static_cast<const int16_t *>(output.data);
-            return dl::dequantize<int16_t, float>(data[idx], scale);
-        }
-        if (output.dtype == dl::DATA_TYPE_FLOAT) {
-            const float *data = static_cast<const float *>(output.data);
-            return data[idx];
-        }
-        return 0.0f;
-    };
+    const int obj_per_anchor = obj_c / num_anchors;
+    const int quality_per_anchor = quality_c / num_anchors;
+    const int cls_per_anchor = cls_c / num_anchors;
 
     static int log_counter = 0;
     std::vector<CandidateBox> boxes;
@@ -329,29 +426,35 @@ void UHDDetect::decode_output(const dl::TensorBase &output, int img_w, int img_h
     for (int a = 0; a < num_anchors; a++) {
         float anchor_w = constants::kAnchors[a][0] * constants::kWhScale[a][0];
         float anchor_h = constants::kAnchors[a][1] * constants::kWhScale[a][1];
-        int base = a * per_anchor;
+        int box_base = a * box_per_anchor;
+        int obj_base = a * obj_per_anchor;
+        int quality_base = a * quality_per_anchor;
+        int cls_base = a * cls_per_anchor;
 
         for (int gy = 0; gy < h; gy++) {
             for (int gx = 0; gx < w; gx++) {
-                float tx = get_val(base + 0, gy, gx);
-                float ty = get_val(base + 1, gy, gx);
-                float tw = get_val(base + 2, gy, gx);
-                float th = get_val(base + 3, gy, gx);
-                float obj = sigmoid(get_val(base + 4, gy, gx));
-                float quality = 1.0f;
-                if (quality_extra) {
-                    quality = sigmoid(get_val(base + 5, gy, gx));
-                }
+                float tx = get_tensor_value(box, layout, box_base + 0, gy, gx);
+                float ty = get_tensor_value(box, layout, box_base + 1, gy, gx);
+                float tw = get_tensor_value(box, layout, box_base + 2, gy, gx);
+                float th = get_tensor_value(box, layout, box_base + 3, gy, gx);
+
+                float obj_score = obj_per_anchor > 0 ? sigmoid(get_tensor_value(obj, layout, obj_base, gy, gx)) : 1.0f;
+                float quality_score =
+                    quality_per_anchor > 0 ? sigmoid(get_tensor_value(quality, layout, quality_base, gy, gx)) : 1.0f;
 
                 float best_score = 0.0f;
                 int best_cls = 0;
-                for (int cls = 0; cls < num_classes; cls++) {
-                    float cls_score = sigmoid(get_val(base + 5 + quality_extra + cls, gy, gx));
-                    float score = obj * quality * cls_score;
-                    if (score > best_score) {
-                        best_score = score;
-                        best_cls = cls;
+                if (cls_per_anchor > 0) {
+                    for (int cls_idx = 0; cls_idx < cls_per_anchor; cls_idx++) {
+                        float cls_score = sigmoid(get_tensor_value(cls, layout, cls_base + cls_idx, gy, gx));
+                        float score = obj_score * quality_score * cls_score;
+                        if (score > best_score) {
+                            best_score = score;
+                            best_cls = cls_idx;
+                        }
                     }
+                } else {
+                    best_score = obj_score * quality_score;
                 }
 
                 frame_max_score = std::max(frame_max_score, best_score);
@@ -394,15 +497,15 @@ void UHDDetect::decode_output(const dl::TensorBase &output, int img_w, int img_h
         ESP_LOGI(TAG, "detections: %zu (max_score=%.4f)", boxes.size(), frame_max_score);
     }
 
-    for (const auto &box : boxes) {
+    for (const auto &box_item : boxes) {
         dl::detect::result_t res;
-        res.category = box.category;
-        res.score = box.score;
+        res.category = box_item.category;
+        res.score = box_item.score;
         res.box = {
-            static_cast<int>(std::lround(box.x1)),
-            static_cast<int>(std::lround(box.y1)),
-            static_cast<int>(std::lround(box.x2)),
-            static_cast<int>(std::lround(box.y2)),
+            static_cast<int>(std::lround(box_item.x1)),
+            static_cast<int>(std::lround(box_item.y1)),
+            static_cast<int>(std::lround(box_item.x2)),
+            static_cast<int>(std::lround(box_item.y2)),
         };
         res.limit_box(img_w, img_h);
         m_results.push_back(res);
