@@ -95,6 +95,50 @@ static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
     {{1.0213513f, 1.1924664f}},
     {{12.898815f, 15.496213f}},
 }};
+#elif defined(UHD_MODEL_W48)
+static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
+    {{2.1534136e-06f, 4.8893025e-06f}},
+    {{4.3443033e-06f, 7.862167e-06f}},
+    {{5.0148083e-06f, 1.5965643e-05f}},
+    {{1.0514152e-05f, 1.4966466e-05f}},
+    {{9.853888e-06f, 3.3501936e-05f}},
+    {{1.8378027e-05f, 5.0147377e-05f}},
+    {{3.265703e-05f, 7.204313e-05f}},
+    {{6.570438e-05f, 8.743979e-05f}},
+}};
+
+static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
+    {{0.94049996f, 0.9681022f}},
+    {{1.07693f, 1.1049803f}},
+    {{1.0843836f, 0.9390503f}},
+    {{1.1149772f, 1.1556228f}},
+    {{1.065014f, 1.220285f}},
+    {{1.2339569f, 1.2934314f}},
+    {{1.2569859f, 1.3254101f}},
+    {{12.324677f, 14.992787f}},
+}};
+#elif defined(UHD_MODEL_W56)
+static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
+    {{2.1534136e-06f, 4.8893025e-06f}},
+    {{4.3443033e-06f, 7.862167e-06f}},
+    {{5.0148083e-06f, 1.5965643e-05f}},
+    {{1.0514152e-05f, 1.4966466e-05f}},
+    {{9.853888e-06f, 3.3501936e-05f}},
+    {{1.8378027e-05f, 5.0147377e-05f}},
+    {{3.265703e-05f, 7.204313e-05f}},
+    {{6.570438e-05f, 8.743979e-05f}},
+}};
+
+static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
+    {{1.3861848f, 1.6451712f}},
+    {{1.8295289f, 2.048054f}},
+    {{1.8937976f, 2.2720199f}},
+    {{2.1825814f, 2.289376f}},
+    {{1.9978697f, 2.541193f}},
+    {{2.3358302f, 2.6337788f}},
+    {{2.568602f, 2.7811756f}},
+    {{11.436459f, 13.78553f}},
+}};
 #else
 static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
     {{2.15274e-06f, 4.887782e-06f}},

@@ -55,6 +55,12 @@ idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w32 build
 # Use the w40 model
 idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w40 build
 
+# Use the w48 model
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w48 build
+
+# Use the w56 model
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w56 build
+
 # Use the w64 model
 idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w64 build
 ```
