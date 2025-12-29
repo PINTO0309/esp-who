@@ -12,6 +12,8 @@ set(EXTRA_COMPONENT_DIRS ../../components/who_task
                          ../../components/who_app/who_detect_app
                          ./components/uhd_detect)
 
+option(UHD_NO_GRAPHIC_LIB "Disable LVGL graphics (use minimal LCD path)" OFF)
+
 add_compile_options(-fdiagnostics-color=always)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 if (NOT DEFINED BSP)
@@ -19,3 +21,7 @@ if (NOT DEFINED BSP)
 endif()
 idf_build_set_property(DEPENDENCIES_LOCK dependencies.lock.${BSP})
 project(ultra_lightweight_human_detection)
+
+if(UHD_NO_GRAPHIC_LIB)
+    idf_build_set_property(COMPILE_DEFINITIONS "BSP_CONFIG_NO_GRAPHIC_LIB=1" APPEND)
+endif()

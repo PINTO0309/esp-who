@@ -1,6 +1,11 @@
 #include "frame_cap_pipeline.hpp"
 #include "uhd_detect.hpp"
 #include "who_detect_app_lcd.hpp"
+#if BSP_CONFIG_NO_GRAPHIC_LIB
+#include "simple_gray_lcd_disp.hpp"
+#include "who_detect.hpp"
+#include "who_yield2idle.hpp"
+#endif
 #include "bsp/esp-bsp.h"
 
 #include "driver/uart.h"
@@ -19,6 +24,13 @@ using namespace who::app;
 namespace {
 static const char *TAG = "UHD_MAIN";
 constexpr int kCliTimeoutMs = 2000;
+#if defined(UHD_MODEL_Y)
+constexpr who::uhd::InputMode kDefaultInputMode = who::uhd::InputMode::Y_ONLY;
+#elif defined(UHD_MODEL_YUV422)
+constexpr who::uhd::InputMode kDefaultInputMode = who::uhd::InputMode::YUV422;
+#else
+constexpr who::uhd::InputMode kDefaultInputMode = who::uhd::InputMode::RGB888;
+#endif
 
 who::uhd::InputMode parse_input_mode(const char *value)
 {
@@ -79,7 +91,7 @@ who::uhd::InputMode read_input_mode_from_uart()
         ESP_LOGW(TAG, "uart_driver_install failed: %d", err);
     }
 
-    printf("input-mode? (rgb888|yuv422|y_only|y_ternary|y_binary) [rgb888]: ");
+    printf("input-mode? (rgb888|yuv422|y_only|y_ternary|y_binary) [%s]: ", input_mode_to_string(kDefaultInputMode));
     fflush(stdout);
 
     char buf[64] = {0};
@@ -101,6 +113,9 @@ who::uhd::InputMode read_input_mode_from_uart()
     }
 
     buf[len] = '\0';
+    if (len == 0) {
+        return kDefaultInputMode;
+    }
     return parse_input_mode(buf);
 }
 } // namespace
@@ -119,8 +134,27 @@ extern "C" void app_main(void)
     ESP_LOGI(TAG, "input mode: %s", input_mode_to_string(input_mode));
 
     auto frame_cap = get_frame_cap_pipeline();
-    auto detect_app = new WhoDetectAppLCD({{255, 0, 0}}, frame_cap);
     auto detect_model = new who::uhd::UHDDetect(input_mode);
+
+#if BSP_CONFIG_NO_GRAPHIC_LIB
+    auto detect_task = new who::detect::WhoDetect("Detect", frame_cap->get_last_node());
+    detect_task->set_model(detect_model);
+
+    auto lcd_disp = new who::lcd_disp::SimpleGrayLCDDisp("LCDDisp", frame_cap->get_last_node(), {{255, 0, 0}});
+    detect_task->set_detect_result_cb(
+        [lcd_disp](const who::detect::WhoDetect::result_t &result) { lcd_disp->save_detect_result(result); });
+    detect_task->set_cleanup_func([lcd_disp]() { lcd_disp->cleanup_results(); });
+
+    bool ret = who::WhoYield2Idle::get_instance()->run();
+    for (const auto &frame_cap_node : frame_cap->get_all_nodes()) {
+        ret &= frame_cap_node->run(4096, 2, 0);
+    }
+    ret &= lcd_disp->run(2560, 2, 0);
+    ret &= detect_task->run(4096, 2, 1);
+    (void)ret;
+#else
+    auto detect_app = new WhoDetectAppLCD({{255, 0, 0}}, frame_cap);
     detect_app->set_model(detect_model);
     detect_app->run();
+#endif
 }

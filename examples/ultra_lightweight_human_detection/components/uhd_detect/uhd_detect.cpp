@@ -16,7 +16,13 @@ static const char *TAG = "UHDDetect";
 
 constexpr int kInputWidth = 64;
 constexpr int kInputHeight = 64;
+#if defined(UHD_MODEL_Y)
+constexpr int kInputChannels = 1;
+#elif defined(UHD_MODEL_YUV422)
+constexpr int kInputChannels = 2;
+#else
 constexpr int kInputChannels = 3;
+#endif
 constexpr int kInputExp = -7;
 constexpr int kTopKDefault = 100;
 constexpr float kScoreThrDefault = 0.05f;
@@ -49,6 +55,24 @@ constexpr const uint8_t *kModelStart =
     ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start;
 constexpr const uint8_t *kModelEnd =
     ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
+#elif defined(UHD_MODEL_W32_YUV422)
+extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_yuv422_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_yuv422_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_yuv422_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_yuv422_static_nopost_nocat_espdl_end");
+constexpr const uint8_t *kModelStart =
+    ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_yuv422_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_yuv422_static_nopost_nocat_espdl_end;
+#elif defined(UHD_MODEL_W32_Y)
+extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_y_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_y_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_y_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_y_static_nopost_nocat_espdl_end");
+constexpr const uint8_t *kModelStart =
+    ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_y_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_y_static_nopost_nocat_espdl_end;
 #elif defined(UHD_MODEL_W32)
 extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start[]
     asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start");
@@ -180,12 +204,23 @@ UHDDetect::UHDDetect(InputMode mode) :
     m_model_data(nullptr),
     m_model_size(0),
     m_model_data_owned(false),
-    m_rgb888(kInputWidth * kInputHeight * kInputChannels),
+    m_rgb888(kInputWidth * kInputHeight * 3),
     m_input(kInputWidth * kInputHeight * kInputChannels),
     m_score_thr(kScoreThrDefault),
     m_nms_thr(kNmsThrDefault),
     m_top_k(kTopKDefault)
 {
+#if defined(UHD_MODEL_YUV422)
+    if (m_input_mode != InputMode::YUV422) {
+        ESP_LOGW(TAG, "forcing input mode to yuv422 for this model");
+        m_input_mode = InputMode::YUV422;
+    }
+#elif defined(UHD_MODEL_Y)
+    if (m_input_mode != InputMode::Y_ONLY) {
+        ESP_LOGW(TAG, "forcing input mode to y_only for this model");
+        m_input_mode = InputMode::Y_ONLY;
+    }
+#endif
     m_model_size = static_cast<size_t>(kModelEnd - kModelStart);
     m_model_data = kModelStart;
     if (m_model_size == 0) {
@@ -314,6 +349,62 @@ bool UHDDetect::prepare_input(const dl::image::img_t &img)
     const float inv_scale = std::ldexp(1.0f, -kInputExp);
     const float inv_255 = 1.0f / 255.0f;
 
+#if defined(UHD_MODEL_Y)
+    if (m_input_mode != InputMode::Y_ONLY) {
+        ESP_LOGE(TAG, "input mode must be y_only for this model");
+        return false;
+    }
+    for (size_t i = 0; i < m_rgb888.size(); i += 3) {
+        float r = m_rgb888[i] * inv_255;
+        float g = m_rgb888[i + 1] * inv_255;
+        float b = m_rgb888[i + 2] * inv_255;
+        float y = clamp01(0.299f * r + 0.587f * g + 0.114f * b);
+        m_input[i / 3] = dl::quantize<int8_t>(y, inv_scale);
+    }
+#elif defined(UHD_MODEL_YUV422)
+    if (m_input_mode != InputMode::YUV422) {
+        ESP_LOGE(TAG, "input mode must be yuv422 for this model");
+        return false;
+    }
+    const int width = kInputWidth;
+    const int height = kInputHeight;
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x += 2) {
+            int idx0 = (y * width + x) * 3;
+            int idx1 = idx0 + 3;
+            float r0 = m_rgb888[idx0] * inv_255;
+            float g0 = m_rgb888[idx0 + 1] * inv_255;
+            float b0 = m_rgb888[idx0 + 2] * inv_255;
+            float r1 = r0;
+            float g1 = g0;
+            float b1 = b0;
+            if (x + 1 < width) {
+                r1 = m_rgb888[idx1] * inv_255;
+                g1 = m_rgb888[idx1 + 1] * inv_255;
+                b1 = m_rgb888[idx1 + 2] * inv_255;
+            }
+
+            float y0 = clamp01(0.299f * r0 + 0.587f * g0 + 0.114f * b0);
+            float y1 = clamp01(0.299f * r1 + 0.587f * g1 + 0.114f * b1);
+            float u0 = -0.14713f * r0 - 0.28886f * g0 + 0.436f * b0;
+            float v0 = 0.615f * r0 - 0.51499f * g0 - 0.10001f * b0;
+            float u1 = -0.14713f * r1 - 0.28886f * g1 + 0.436f * b1;
+            float v1 = 0.615f * r1 - 0.51499f * g1 - 0.10001f * b1;
+            float u = clamp01(((u0 + u1) * 0.5f) + 0.5f);
+            float v = clamp01(((v0 + v1) * 0.5f) + 0.5f);
+
+            int out0 = (y * width + x) * 2;
+            m_input[out0] = dl::quantize<int8_t>(y0, inv_scale);
+            m_input[out0 + 1] = dl::quantize<int8_t>(u, inv_scale);
+
+            if (x + 1 < width) {
+                int out1 = out0 + 2;
+                m_input[out1] = dl::quantize<int8_t>(y1, inv_scale);
+                m_input[out1 + 1] = dl::quantize<int8_t>(v, inv_scale);
+            }
+        }
+    }
+#else
     for (size_t i = 0; i < m_rgb888.size(); i += 3) {
         float r = m_rgb888[i] * inv_255;
         float g = m_rgb888[i + 1] * inv_255;
@@ -356,6 +447,7 @@ bool UHDDetect::prepare_input(const dl::image::img_t &img)
         m_input[i + 1] = dl::quantize<int8_t>(c2, inv_scale);
         m_input[i + 2] = dl::quantize<int8_t>(c3, inv_scale);
     }
+#endif
 
     return true;
 }
