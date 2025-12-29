@@ -4,6 +4,8 @@
 #if BSP_CONFIG_NO_GRAPHIC_LIB
 #include "simple_gray_lcd_disp.hpp"
 #include "who_detect.hpp"
+#include "who_detect_result_handle.hpp"
+#include "who_frame_lcd_disp.hpp"
 #include "who_yield2idle.hpp"
 #endif
 #include "bsp/esp-bsp.h"
@@ -140,10 +142,19 @@ extern "C" void app_main(void)
     auto detect_task = new who::detect::WhoDetect("Detect", frame_cap->get_last_node());
     detect_task->set_model(detect_model);
 
+#if defined(UHD_MODEL_Y)
     auto lcd_disp = new who::lcd_disp::SimpleGrayLCDDisp("LCDDisp", frame_cap->get_last_node(), {{255, 0, 0}});
     detect_task->set_detect_result_cb(
         [lcd_disp](const who::detect::WhoDetect::result_t &result) { lcd_disp->save_detect_result(result); });
     detect_task->set_cleanup_func([lcd_disp]() { lcd_disp->cleanup_results(); });
+#else
+    auto lcd_disp = new who::lcd_disp::WhoFrameLCDDisp("LCDDisp", frame_cap->get_last_node());
+    auto result_disp = new who::lcd_disp::WhoDetectResultLCDDisp(detect_task, {{255, 0, 0}});
+    lcd_disp->set_lcd_disp_cb([result_disp](who::cam::cam_fb_t *fb) { result_disp->lcd_disp_cb(fb); });
+    detect_task->set_detect_result_cb(
+        [result_disp](const who::detect::WhoDetect::result_t &result) { result_disp->save_detect_result(result); });
+    detect_task->set_cleanup_func([result_disp]() { result_disp->cleanup(); });
+#endif
 
     bool ret = who::WhoYield2Idle::get_instance()->run();
     for (const auto &frame_cap_node : frame_cap->get_all_nodes()) {

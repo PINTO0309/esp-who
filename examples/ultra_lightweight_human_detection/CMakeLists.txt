@@ -12,7 +12,7 @@ set(EXTRA_COMPONENT_DIRS ../../components/who_task
                          ../../components/who_app/who_detect_app
                          ./components/uhd_detect)
 
-option(UHD_NO_GRAPHIC_LIB "Disable LVGL graphics (use minimal LCD path)" OFF)
+option(UHD_NO_GRAPHIC_LIB "Disable LVGL graphics (use minimal LCD path)" ON)
 
 add_compile_options(-fdiagnostics-color=always)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
