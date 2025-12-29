@@ -4,7 +4,7 @@ set(include_dirs .)
 
 set(requires espressif__esp-dl)
 
-set(UHD_MODEL "w64" CACHE STRING "UHD model variant (w16, w24, w32, w40, w48, w56, or w64)")
+set(UHD_MODEL "w16" CACHE STRING "UHD model variant (w16, w24, w32, w40, w48, w56, or w64)")
 
 if(UHD_MODEL STREQUAL "w16")
     set(model_dir ${CMAKE_CURRENT_LIST_DIR}/../../../../models/uhd/ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_espdl)
