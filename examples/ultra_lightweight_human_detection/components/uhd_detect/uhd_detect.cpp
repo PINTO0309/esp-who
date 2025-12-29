@@ -32,21 +32,23 @@ enum class OutputLayout {
 };
 
 #if defined(UHD_MODEL_W16)
-extern const uint8_t ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_espdl_start[]
-    asm("_binary_ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_espdl_start");
-extern const uint8_t ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_espdl_end[]
-    asm("_binary_ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_espdl_end");
+extern const uint8_t ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end");
 constexpr const uint8_t *kModelStart =
-    ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_espdl_start;
-constexpr const uint8_t *kModelEnd = ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_espdl_end;
+    ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #elif defined(UHD_MODEL_W24)
-extern const uint8_t ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_espdl_start[]
-    asm("_binary_ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_espdl_start");
-extern const uint8_t ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_espdl_end[]
-    asm("_binary_ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_espdl_end");
+extern const uint8_t ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end");
 constexpr const uint8_t *kModelStart =
-    ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_espdl_start;
-constexpr const uint8_t *kModelEnd = ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_espdl_end;
+    ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #elif defined(UHD_MODEL_W32)
 extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start[]
     asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start");
@@ -57,37 +59,41 @@ constexpr const uint8_t *kModelStart =
 constexpr const uint8_t *kModelEnd =
     ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #elif defined(UHD_MODEL_W40)
-extern const uint8_t ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_espdl_start[]
-    asm("_binary_ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_espdl_start");
-extern const uint8_t ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_espdl_end[]
-    asm("_binary_ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_espdl_end");
+extern const uint8_t ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end");
 constexpr const uint8_t *kModelStart =
-    ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_espdl_start;
-constexpr const uint8_t *kModelEnd = ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_espdl_end;
+    ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #elif defined(UHD_MODEL_W48)
-extern const uint8_t ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_espdl_start[]
-    asm("_binary_ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_espdl_start");
-extern const uint8_t ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_espdl_end[]
-    asm("_binary_ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_espdl_end");
+extern const uint8_t ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end");
 constexpr const uint8_t *kModelStart =
-    ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_espdl_start;
-constexpr const uint8_t *kModelEnd = ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_espdl_end;
+    ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w48_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #elif defined(UHD_MODEL_W56)
-extern const uint8_t ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_espdl_start[]
-    asm("_binary_ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_espdl_start");
-extern const uint8_t ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_espdl_end[]
-    asm("_binary_ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_espdl_end");
+extern const uint8_t ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end");
 constexpr const uint8_t *kModelStart =
-    ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_espdl_start;
-constexpr const uint8_t *kModelEnd = ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_espdl_end;
+    ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w56_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #else
-extern const uint8_t ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_espdl_start[]
-    asm("_binary_ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_espdl_start");
-extern const uint8_t ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_espdl_end[]
-    asm("_binary_ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_espdl_end");
+extern const uint8_t ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end");
 constexpr const uint8_t *kModelStart =
-    ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_espdl_start;
-constexpr const uint8_t *kModelEnd = ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_espdl_end;
+    ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w64_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #endif
 
 float sigmoid(float x)
