@@ -128,6 +128,13 @@ void SimpleGrayLCDDisp::update_result(const cam::cam_fb_t *fb)
 
 void SimpleGrayLCDDisp::task()
 {
+    {
+        // Clear the full LCD once so untouched regions stay black.
+        const size_t clear_size = static_cast<size_t>(BSP_LCD_H_RES) * BSP_LCD_V_RES * (BSP_LCD_BITS_PER_PIXEL / 8);
+        std::vector<uint8_t> clear_buf(clear_size, 0);
+        m_lcd->draw_bitmap(clear_buf.data(), BSP_LCD_H_RES, BSP_LCD_V_RES, 0, 0);
+    }
+
     while (true) {
         EventBits_t event_bits = xEventGroupWaitBits(
             m_event_group, frame_cap::WhoFrameCapNode::NEW_FRAME | TASK_PAUSE | TASK_STOP, pdTRUE, pdFALSE, portMAX_DELAY);

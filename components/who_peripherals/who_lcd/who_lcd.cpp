@@ -24,6 +24,13 @@ void WhoLCD::init()
     ESP_ERROR_CHECK(bsp_display_backlight_on());
     m_lcd_buffer = heap_caps_malloc(BSP_LCD_H_RES * BSP_LCD_V_RES * (BSP_LCD_BITS_PER_PIXEL / 8),
                                     MALLOC_CAP_INTERNAL | MALLOC_CAP_DMA);
+    if (m_lcd_buffer) {
+        // Clear the panel once so the background is deterministic.
+        const size_t buf_size =
+            static_cast<size_t>(BSP_LCD_H_RES) * BSP_LCD_V_RES * (BSP_LCD_BITS_PER_PIXEL / 8);
+        memset(m_lcd_buffer, 0, buf_size);
+        esp_lcd_panel_draw_bitmap(m_panel_handle, 0, 0, BSP_LCD_H_RES, BSP_LCD_V_RES, m_lcd_buffer);
+    }
 }
 
 void WhoLCD::deinit()

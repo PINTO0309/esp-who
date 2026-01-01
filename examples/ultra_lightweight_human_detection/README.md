@@ -37,7 +37,7 @@ PowerShell:
 idf.py -DSDKCONFIG_DEFAULTS="sdkconfig.bsp.esp32_s3_eye" set-target "esp32s3"
 ```
 
-3) Build (default model: w64)
+3) Build (default model: w16)
 ```bash
 idf.py -B build -DBSP=esp32_s3_eye build
 ```
@@ -63,6 +63,27 @@ idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w56 build
 
 # Use the w64 model
 idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w64 build
+
+# Use the w16 high-accuracy model
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w16_highacc build
+
+# Use the w24 high-accuracy model
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w24_highacc build
+
+# Use the w32 high-accuracy model
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w32_highacc build
+
+# Use the w40 high-accuracy model
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w40_highacc build
+
+# Use the w48 high-accuracy model
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w48_highacc build
+
+# Use the w56 high-accuracy model
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w56_highacc build
+
+# Use the w64 high-accuracy model
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w64_highacc build
 ```
 
 ## Flash and Monitor
