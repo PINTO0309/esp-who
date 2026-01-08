@@ -19,6 +19,7 @@
 #include <cstdio>
 #include <cctype>
 #include <cstring>
+#include <vector>
 
 using namespace who::frame_cap;
 using namespace who::app;
@@ -32,6 +33,11 @@ constexpr who::uhd::InputMode kDefaultInputMode = who::uhd::InputMode::Y_ONLY;
 constexpr who::uhd::InputMode kDefaultInputMode = who::uhd::InputMode::YUV422;
 #else
 constexpr who::uhd::InputMode kDefaultInputMode = who::uhd::InputMode::RGB888;
+#endif
+#if defined(UHD_MODEL_00_07)
+const std::vector<std::vector<uint8_t>> kDetectPalette = {{255, 0, 0}, {0, 255, 0}};
+#else
+const std::vector<std::vector<uint8_t>> kDetectPalette = {{255, 0, 0}};
 #endif
 
 who::uhd::InputMode parse_input_mode(const char *value)
@@ -143,13 +149,13 @@ extern "C" void app_main(void)
     detect_task->set_model(detect_model);
 
 #if defined(UHD_MODEL_Y)
-    auto lcd_disp = new who::lcd_disp::SimpleGrayLCDDisp("LCDDisp", frame_cap->get_last_node(), {{255, 0, 0}});
+    auto lcd_disp = new who::lcd_disp::SimpleGrayLCDDisp("LCDDisp", frame_cap->get_last_node(), kDetectPalette);
     detect_task->set_detect_result_cb(
         [lcd_disp](const who::detect::WhoDetect::result_t &result) { lcd_disp->save_detect_result(result); });
     detect_task->set_cleanup_func([lcd_disp]() { lcd_disp->cleanup_results(); });
 #else
     auto lcd_disp = new who::lcd_disp::WhoFrameLCDDisp("LCDDisp", frame_cap->get_last_node());
-    auto result_disp = new who::lcd_disp::WhoDetectResultLCDDisp(detect_task, {{255, 0, 0}});
+    auto result_disp = new who::lcd_disp::WhoDetectResultLCDDisp(detect_task, kDetectPalette);
     lcd_disp->set_lcd_disp_cb([result_disp](who::cam::cam_fb_t *fb) { result_disp->lcd_disp_cb(fb); });
     detect_task->set_detect_result_cb(
         [result_disp](const who::detect::WhoDetect::result_t &result) { result_disp->save_detect_result(result); });
@@ -164,7 +170,7 @@ extern "C" void app_main(void)
     ret &= detect_task->run(4096, 2, 1);
     (void)ret;
 #else
-    auto detect_app = new WhoDetectAppLCD({{255, 0, 0}}, frame_cap);
+    auto detect_app = new WhoDetectAppLCD(kDetectPalette, frame_cap);
     detect_app->set_model(detect_model);
     detect_app->run();
 #endif

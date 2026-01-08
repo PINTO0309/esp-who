@@ -38,7 +38,16 @@ enum class OutputLayout {
 };
 
 #if defined(UHD_MODEL_W16)
-#if defined(UHD_MODEL_HIGHACC)
+#if defined(UHD_MODEL_00_07)
+extern const uint8_t ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end");
+constexpr const uint8_t *kModelStart =
+    ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end;
+#elif defined(UHD_MODEL_HIGHACC)
 extern const uint8_t ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_start[]
     asm("_binary_ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_start");
 extern const uint8_t ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_end[]
@@ -58,7 +67,16 @@ constexpr const uint8_t *kModelEnd =
     ultratinyod_res_anc8_w16_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #endif
 #elif defined(UHD_MODEL_W24)
-#if defined(UHD_MODEL_HIGHACC)
+#if defined(UHD_MODEL_00_07)
+extern const uint8_t ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end");
+constexpr const uint8_t *kModelStart =
+    ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end;
+#elif defined(UHD_MODEL_HIGHACC)
 extern const uint8_t ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_start[]
     asm("_binary_ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_start");
 extern const uint8_t ultratinyod_res_anc8_w24_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_end[]
@@ -96,7 +114,16 @@ constexpr const uint8_t *kModelStart =
 constexpr const uint8_t *kModelEnd =
     ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_y_static_nopost_nocat_espdl_end;
 #elif defined(UHD_MODEL_W32)
-#if defined(UHD_MODEL_HIGHACC)
+#if defined(UHD_MODEL_00_07)
+extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end");
+constexpr const uint8_t *kModelStart =
+    ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end;
+#elif defined(UHD_MODEL_HIGHACC)
 extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_start[]
     asm("_binary_ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_start");
 extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_end[]
@@ -116,7 +143,16 @@ constexpr const uint8_t *kModelEnd =
     ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #endif
 #elif defined(UHD_MODEL_W40)
-#if defined(UHD_MODEL_HIGHACC)
+#if defined(UHD_MODEL_00_07)
+extern const uint8_t ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end");
+constexpr const uint8_t *kModelStart =
+    ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_end;
+#elif defined(UHD_MODEL_HIGHACC)
 extern const uint8_t ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_start[]
     asm("_binary_ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_start");
 extern const uint8_t ultratinyod_res_anc8_w40_64x64_opencv_inter_nearest_static_nopost_nocat_acc_espdl_end[]
