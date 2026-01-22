@@ -52,6 +52,9 @@ idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w24 build
 # Use the w32 model
 idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w32 build
 
+# Use the w32 96x96 model
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w32_96 build
+
 # Use the w40 model
 idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL=w40 build
 
@@ -106,5 +109,5 @@ input-mode? (rgb888|yuv422|y_only|y_ternary|y_binary) [rgb888]:
 - Example inputs: `y_only`, `y_binary`, etc.
 
 ## Notes
-- The camera is configured to `FRAMESIZE_96X96` and resized to 64x64 for the model input.
+- The camera is configured to `FRAMESIZE_96X96`. 64x64 models resize the frame to 64x64; the `w32_96` model runs at 96x96.
 - The model is embedded into rodata via CMake `EMBED_FILES`.

@@ -73,6 +73,28 @@ static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
     {{1.0781527f, 1.3804322f}},
     {{14.666821f, 17.98585f}},
 }};
+#elif defined(UHD_MODEL_W32_96)
+static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
+    {{2.2229108e-06f, 4.8328925e-06f}},
+    {{4.427543e-06f, 8.925229e-06f}},
+    {{5.5171904e-06f, 2.026657e-05f}},
+    {{1.0455477e-05f, 1.4616036e-05f}},
+    {{1.1427396e-05f, 3.5796045e-05f}},
+    {{1.998251e-05f, 5.530937e-05f}},
+    {{3.5214052e-05f, 7.326521e-05f}},
+    {{6.7674257e-05f, 8.809728e-05f}},
+}};
+
+static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
+    {{1.1181118f, 1.1181222f}},
+    {{1.1582131f, 1.1864599f}},
+    {{1.0344915f, 1.2234397f}},
+    {{1.2373515f, 1.2415383f}},
+    {{1.2139078f, 1.084584f}},
+    {{1.1383877f, 1.2061696f}},
+    {{1.0544535f, 1.2030268f}},
+    {{12.024205f, 13.64615f}},
+}};
 #elif defined(UHD_MODEL_W40)
 static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
     {{2.1530682e-06f, 4.888534e-06f}},

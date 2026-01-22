@@ -14,8 +14,13 @@
 namespace {
 static const char *TAG = "UHDDetect";
 
+#if defined(UHD_MODEL_W32_96)
+constexpr int kInputWidth = 96;
+constexpr int kInputHeight = 96;
+#else
 constexpr int kInputWidth = 64;
 constexpr int kInputHeight = 64;
+#endif
 #if defined(UHD_MODEL_Y)
 constexpr int kInputChannels = 1;
 #elif defined(UHD_MODEL_YUV422)
@@ -113,6 +118,15 @@ constexpr const uint8_t *kModelStart =
     ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_y_static_nopost_nocat_espdl_start;
 constexpr const uint8_t *kModelEnd =
     ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_y_static_nopost_nocat_espdl_end;
+#elif defined(UHD_MODEL_W32_96)
+extern const uint8_t ultratinyod_anc8_w32_96x96_opencv_inter_nearest_static_nopost_nocat_espdl_start[]
+    asm("_binary_ultratinyod_anc8_w32_96x96_opencv_inter_nearest_static_nopost_nocat_espdl_start");
+extern const uint8_t ultratinyod_anc8_w32_96x96_opencv_inter_nearest_static_nopost_nocat_espdl_end[]
+    asm("_binary_ultratinyod_anc8_w32_96x96_opencv_inter_nearest_static_nopost_nocat_espdl_end");
+constexpr const uint8_t *kModelStart =
+    ultratinyod_anc8_w32_96x96_opencv_inter_nearest_static_nopost_nocat_espdl_start;
+constexpr const uint8_t *kModelEnd =
+    ultratinyod_anc8_w32_96x96_opencv_inter_nearest_static_nopost_nocat_espdl_end;
 #elif defined(UHD_MODEL_W32)
 #if defined(UHD_MODEL_00_07)
 extern const uint8_t ultratinyod_res_anc8_w32_64x64_opencv_inter_nearest_00_07_static_nopost_nocat_espdl_start[]
