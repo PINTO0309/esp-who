@@ -32,6 +32,15 @@ esp32_s3_eye_noglib
   ```bash
   rm -rf build && idf.py -B build -DIDF_TARGET=esp32s3 -DFASTESTDET_MODEL_DIR=fastestdetnext_x3_00_x1_00_60x80_opencv_inter_nearest_cls09_espdl build
   ```
+- Change model family/dir (e.g. UHD models):
+  ```bash
+  rm -rf build && idf.py -B build -DIDF_TARGET=esp32s3 -DBENCH_MODEL_FAMILY=uhd \
+    -DBENCH_MODEL_DIR=ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost build
+  ```
+  ```bash
+  rm -rf build && idf.py -B build -DIDF_TARGET=esp32s3 -DBENCH_MODEL_FAMILY=uhd \
+    -DBENCH_MODEL_DIR=ultratinyod_anc8_w40_64x64_opencv_inter_nearest_static_nopost build
+  ```
 - Change iterations:
   ```bash
   rm -rf build && idf.py -B build -DIDF_TARGET=esp32s3 -DBENCH_WARMUP=1 -DBENCH_ITERS=10 build
