@@ -1,189 +1,76 @@
 #pragma once
 
-#include <array>
+#include <cstddef>
+#include <cstring>
 
-namespace who {
-namespace uhd {
-namespace constants {
-static constexpr int kNumAnchors = 8;
+namespace uhd_detect {
+struct UhdAnchorSet {
+    const float *anchors;
+    const float *wh_scale;
+    int count;
+};
 
-#if defined(UHD_MODEL_W16)
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
-    {{2.1547698e-06f, 4.892399e-06f}},
-    {{4.347102e-06f, 7.867049e-06f}},
-    {{5.018026e-06f, 1.59756e-05f}},
-    {{1.0520861e-05f, 1.4976141e-05f}},
-    {{9.860254e-06f, 3.3523094e-05f}},
-    {{1.8389605e-05f, 5.0179617e-05f}},
-    {{3.267767e-05f, 7.208872e-05f}},
-    {{6.574581e-05f, 8.7495486e-05f}},
-}};
+static inline constexpr float kAnchorsW32[] = {
+    2.1544415e-06f, 4.8916531e-06f,
+    4.3464302e-06f, 7.8658741e-06f,
+    5.0172557e-06f, 1.5973144e-05f,
+    1.0519245e-05f, 1.4973825e-05f,
+    9.8587534e-06f, 3.3517914e-05f,
+    1.8386805e-05f, 5.0171810e-05f,
+    3.2672662e-05f, 7.2077630e-05f,
+    6.5735781e-05f, 8.7482200e-05f,
+};
 
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
-    {{0.91346186f, 0.9134746f}},
-    {{1.078224f, 1.0782323f}},
-    {{1.078217f, 1.0782576f}},
-    {{1.0095463f, 1.1443267f}},
-    {{1.1458925f, 1.1263007f}},
-    {{1.1029736f, 1.1982007f}},
-    {{0.99639803f, 1.0204992f}},
-    {{16.22507f, 20.609888f}},
-}};
-#elif defined(UHD_MODEL_W24)
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
-    {{2.154089e-06f, 4.8908596e-06f}},
-    {{4.3457017e-06f, 7.864601e-06f}},
-    {{5.016423e-06f, 1.597055e-05f}},
-    {{1.0517512e-05f, 1.4971305e-05f}},
-    {{9.85714e-06f, 3.3512697e-05f}},
-    {{1.8383815e-05f, 5.0163326e-05f}},
-    {{3.2667354e-05f, 7.206588e-05f}},
-    {{6.572516e-05f, 8.7467786e-05f}},
-}};
+static inline constexpr float kWhScaleW32[] = {
+    1.1018596f, 1.1018785f,
+    1.1399714f, 1.1158636f,
+    1.1602806f, 1.1600958f,
+    1.1953557f, 1.1898705f,
+    1.0877644f, 1.0939205f,
+    1.1106393f, 1.2792205f,
+    1.2914679f, 1.2122172f,
+    14.072575f, 16.930525f,
+};
 
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
-    {{0.91119033f, 0.9117813f}},
-    {{1.0665009f, 1.0655237f}},
-    {{1.0659407f, 1.0702126f}},
-    {{1.1133114f, 1.1210057f}},
-    {{1.1283737f, 1.0045562f}},
-    {{0.78900033f, 1.1476823f}},
-    {{1.1838069f, 1.1769532f}},
-    {{15.156742f, 17.672466f}},
-}};
-#elif defined(UHD_MODEL_W32)
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
-    {{2.1530377e-06f, 4.888462e-06f}},
-    {{4.343542e-06f, 7.860836e-06f}},
-    {{5.0139433e-06f, 1.5962883e-05f}},
-    {{1.0512373e-05f, 1.4963695e-05f}},
-    {{9.852202e-06f, 3.3496275e-05f}},
-    {{1.8374898e-05f, 5.0138686e-05f}},
-    {{3.2651304e-05f, 7.203e-05f}},
-    {{6.5693624e-05f, 8.742494e-05f}},
-}};
+static inline constexpr float kAnchorsW40[] = {
+    2.1553853e-06f, 4.8937904e-06f,
+    4.3483524e-06f, 7.8692810e-06f,
+    5.0194476e-06f, 1.5980148e-05f,
+    1.0523835e-05f, 1.4980503e-05f,
+    9.8630517e-06f, 3.3532524e-05f,
+    1.8394810e-05f, 5.0193834e-05f,
+    3.2686890e-05f, 7.2109266e-05f,
+    6.5764492e-05f, 8.7520377e-05f,
+};
 
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
-    {{1.0038269f, 1.0069243f}},
-    {{1.2311599f, 1.2704719f}},
-    {{1.2353618f, 1.3111569f}},
-    {{1.2814335f, 1.2954069f}},
-    {{1.1006184f, 1.2319573f}},
-    {{1.3855497f, 1.4323583f}},
-    {{1.0781527f, 1.3804322f}},
-    {{14.666821f, 17.98585f}},
-}};
-#elif defined(UHD_MODEL_W32_96)
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
-    {{2.2229108e-06f, 4.8328925e-06f}},
-    {{4.427543e-06f, 8.925229e-06f}},
-    {{5.5171904e-06f, 2.026657e-05f}},
-    {{1.0455477e-05f, 1.4616036e-05f}},
-    {{1.1427396e-05f, 3.5796045e-05f}},
-    {{1.998251e-05f, 5.530937e-05f}},
-    {{3.5214052e-05f, 7.326521e-05f}},
-    {{6.7674257e-05f, 8.809728e-05f}},
-}};
+static inline constexpr float kWhScaleW40[] = {
+    1.1052004f, 0.7689974f,
+    1.1248873f, 1.1524976f,
+    1.1474544f, 1.1747091f,
+    1.1839403f, 1.1782105f,
+    1.1877522f, 1.2349045f,
+    0.9627373f, 1.1769345f,
+    1.1073434f, 1.1735326f,
+    13.743571f, 16.26899f,
+};
 
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
-    {{1.1181118f, 1.1181222f}},
-    {{1.1582131f, 1.1864599f}},
-    {{1.0344915f, 1.2234397f}},
-    {{1.2373515f, 1.2415383f}},
-    {{1.2139078f, 1.084584f}},
-    {{1.1383877f, 1.2061696f}},
-    {{1.0544535f, 1.2030268f}},
-    {{12.024205f, 13.64615f}},
-}};
-#elif defined(UHD_MODEL_W40)
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
-    {{2.1530682e-06f, 4.888534e-06f}},
-    {{4.343594e-06f, 7.860919e-06f}},
-    {{5.0140193e-06f, 1.5963127e-05f}},
-    {{1.0512519e-05f, 1.4963974e-05f}},
-    {{9.852341e-06f, 3.3496635e-05f}},
-    {{1.8375162e-05f, 5.013932e-05f}},
-    {{3.2651835e-05f, 7.203105e-05f}},
-    {{6.569434e-05f, 8.742618e-05f}},
-}};
-
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
-    {{0.9465604f, 0.9427882f}},
-    {{1.0835661f, 1.0995089f}},
-    {{1.0894035f, 1.1527061f}},
-    {{1.1716603f, 1.1637908f}},
-    {{1.1677824f, 1.2365428f}},
-    {{1.1216182f, 1.3046093f}},
-    {{1.0213513f, 1.1924664f}},
-    {{12.898815f, 15.496213f}},
-}};
-#elif defined(UHD_MODEL_W48)
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
-    {{2.1534136e-06f, 4.8893025e-06f}},
-    {{4.3443033e-06f, 7.862167e-06f}},
-    {{5.0148083e-06f, 1.5965643e-05f}},
-    {{1.0514152e-05f, 1.4966466e-05f}},
-    {{9.853888e-06f, 3.3501936e-05f}},
-    {{1.8378027e-05f, 5.0147377e-05f}},
-    {{3.265703e-05f, 7.204313e-05f}},
-    {{6.570438e-05f, 8.743979e-05f}},
-}};
-
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
-    {{0.94049996f, 0.9681022f}},
-    {{1.07693f, 1.1049803f}},
-    {{1.0843836f, 0.9390503f}},
-    {{1.1149772f, 1.1556228f}},
-    {{1.065014f, 1.220285f}},
-    {{1.2339569f, 1.2934314f}},
-    {{1.2569859f, 1.3254101f}},
-    {{12.324677f, 14.992787f}},
-}};
-#elif defined(UHD_MODEL_W56)
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
-    {{2.1534136e-06f, 4.8893025e-06f}},
-    {{4.3443033e-06f, 7.862167e-06f}},
-    {{5.0148083e-06f, 1.5965643e-05f}},
-    {{1.0514152e-05f, 1.4966466e-05f}},
-    {{9.853888e-06f, 3.3501936e-05f}},
-    {{1.8378027e-05f, 5.0147377e-05f}},
-    {{3.265703e-05f, 7.204313e-05f}},
-    {{6.570438e-05f, 8.743979e-05f}},
-}};
-
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
-    {{1.3861848f, 1.6451712f}},
-    {{1.8295289f, 2.048054f}},
-    {{1.8937976f, 2.2720199f}},
-    {{2.1825814f, 2.289376f}},
-    {{1.9978697f, 2.541193f}},
-    {{2.3358302f, 2.6337788f}},
-    {{2.568602f, 2.7811756f}},
-    {{11.436459f, 13.78553f}},
-}};
-#else
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kAnchors = {{
-    {{2.15274e-06f, 4.887782e-06f}},
-    {{4.3429395e-06f, 7.859855e-06f}},
-    {{5.0132826e-06f, 1.5960704e-05f}},
-    {{1.0510891e-05f, 1.4961591e-05f}},
-    {{9.8508435e-06f, 3.3491866e-05f}},
-    {{1.8372557e-05f, 5.0131897e-05f}},
-    {{3.2646945e-05f, 7.201999e-05f}},
-    {{6.568488e-05f, 8.741337e-05f}},
-}};
-
-static constexpr std::array<std::array<float, 2>, kNumAnchors> kWhScale = {{
-    {{0.9561848f, 0.97087806f}},
-    {{1.0484655f, 1.0702585f}},
-    {{1.0497174f, 1.0921139f}},
-    {{1.1101862f, 1.0946468f}},
-    {{1.1021345f, 1.1246827f}},
-    {{0.99257505f, 1.1630744f}},
-    {{1.1224978f, 1.1908296f}},
-    {{10.192774f, 12.409145f}},
-}};
-#endif
+inline bool get_uhd_anchor_set(const char *model_name, UhdAnchorSet *out)
+{
+    if (!model_name || !out) {
+        return false;
+    }
+    if (std::strstr(model_name, "w40") != nullptr) {
+        out->anchors = kAnchorsW40;
+        out->wh_scale = kWhScaleW40;
+        out->count = 8;
+        return true;
+    }
+    if (std::strstr(model_name, "w32") != nullptr) {
+        out->anchors = kAnchorsW32;
+        out->wh_scale = kWhScaleW32;
+        out->count = 8;
+        return true;
+    }
+    return false;
 }
-} // namespace uhd
-} // namespace who
+} // namespace uhd_detect

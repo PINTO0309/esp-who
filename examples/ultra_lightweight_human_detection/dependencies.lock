@@ -34,7 +34,7 @@ dependencies:
       type: service
     version: 0.3.1
   espressif/esp-dl:
-    component_hash: 92733552fb590c36a043e2d08f648707a72aef357469043a25dc221e285288c1
+    component_hash: 5130cf5ba89cb43865da942ddf23b39b1520855907cd91b68d3ad65dcf2305b6
     dependencies:
     - name: espressif/dl_fft
       registry_url: https://components.espressif.com
@@ -58,7 +58,7 @@ dependencies:
     - esp32
     - esp32s3
     - esp32p4
-    version: 3.2.0
+    version: 3.2.4
   espressif/esp-dsp:
     component_hash: 42dce32d46ac93dc11f60d368e29a830e9661c7345d794b8a45c343479cae636
     dependencies:
@@ -180,7 +180,7 @@ dependencies:
       type: service
     version: 2.0.1
   espressif/usb_host_uvc:
-    component_hash: b0cb9a3a2eaa09dc6e5cc3e47e04d0a73e47c2d3dcfb3afce959224a1fe5fb5e
+    component_hash: 197eae0d1dd5ddec773704653e0ff70e81126b8ccdb62e034ed239f755adb48c
     dependencies:
     - name: idf
       require: private
@@ -201,7 +201,7 @@ dependencies:
     - esp32p4
     - esp32h4
     - linux
-    version: 2.3.1
+    version: 2.4.1
   idf:
     source:
       type: idf
@@ -218,6 +218,6 @@ direct_dependencies:
 - espressif/esp32_s3_eye
 - espressif/usb_host_uvc
 - idf
-manifest_hash: dbc46a1f08235ea895c30be8cb0dfc55babdc315b326b7be7e4b30918a81295a
+manifest_hash: 32c31daaa1cb8f6924270da1714280f6256c69a1322f632b55faae53da38b356
 target: esp32s3
 version: 2.0.0
