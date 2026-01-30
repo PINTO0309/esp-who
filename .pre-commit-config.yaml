@@ -30,3 +30,9 @@ repos:
         args: ['--style=file']
 
 
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        args: [--config=.codespellrc]
