@@ -9,6 +9,25 @@
 1. https://github.com/PINTO0309/UHD/releases/download/onnx/ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost.tar.gz
 2. https://github.com/PINTO0309/UHD/releases/download/onnx/ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo.tar.gz
 
+```
+esp-who/models
+└── uhd
+    ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost
+    │   ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_anchors.npy
+    │   ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost.espdl
+    │   ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost.info
+    │   ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost.json
+    │   ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost.onnx
+    │   └── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_wh_scale.npy
+    └── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo
+        ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo_anchors.npy
+        ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo.espdl
+        ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo.info
+        ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo.json
+        ├── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo.onnx
+        └── ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo_wh_scale.npy
+```
+
 ## 対応ボード / BSP
 - 既定の BSP: `esp32_s3_eye`（`IDF_TARGET=esp32s3`）
 - 本フォルダには `sdkconfig.bsp.esp32_s3_eye` のみ同梱されています。
