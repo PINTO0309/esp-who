@@ -3,8 +3,10 @@
 ## 概要
 - UltraTinyOD (UHD) モデルを使った軽量な人物検出サンプルです。
 - カメラ映像を取得し、推論結果を LCD に描画します（デフォルト）。
-- 既定のモデルは `models/uhd/ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost` です。
-  - `*.espdl` が存在しない場合は `_nocat.espdl` を自動的に拾います。
+
+## サンプルモデル
+1. https://github.com/PINTO0309/UHD/releases/download/onnx/ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost.tar.gz
+2. https://github.com/PINTO0309/UHD/releases/download/onnx/ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo.tar.gz
 
 ## 対応ボード / BSP
 - 既定の BSP: `esp32_s3_eye`（`IDF_TARGET=esp32s3`）
