@@ -5,6 +5,7 @@
 - カメラ映像を取得し、推論結果を LCD に描画します（デフォルト）。
 
 ## サンプルモデル
+ダウンロードして `models/uhd` 配下で解凍。
 1. https://github.com/PINTO0309/UHD/releases/download/onnx/ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost.tar.gz
 2. https://github.com/PINTO0309/UHD/releases/download/onnx/ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo.tar.gz
 
@@ -54,7 +55,10 @@ idf.py -DSDKCONFIG_DEFAULTS="sdkconfig.bsp.esp32_s3_eye" set-target "esp32s3"
 
 ## ビルド
 ```bash
-idf.py build
+# I (14564) uhd_detect: latency(ms): pre=0.85 infer=31.97 post=0.91
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL_DIR=ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost -DIDF_TARGET=esp32s3 build
+# I (12947) uhd_detect: latency(ms): pre=0.88 infer=29.77 post=0.96
+idf.py -B build -DBSP=esp32_s3_eye -DUHD_MODEL_DIR=ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo -DIDF_TARGET=esp32s3 build
 ```
 
 - モデルや BSP を変更した後はクリーンビルド推奨:
@@ -65,7 +69,7 @@ idf.py build
 
 ## 書き込み・実行
 ```bash
-idf.py -p /dev/ttyUSB0 flash monitor
+idf.py flash monitor
 ```
 
 - `-p` を省略すると自動スキャンされます。
