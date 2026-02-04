@@ -7,9 +7,9 @@
 namespace uhd_detect {
 class UltraLightweightHumanDetect : public dl::detect::DetectImpl {
 public:
-    static inline constexpr float default_score_thr = 0.8f;
+    static inline constexpr float default_score_thr = 0.15f;
     static inline constexpr float default_nms_thr = 0.45f;
-    static inline constexpr int default_top_k = 100;
+    static inline constexpr int default_top_k = 10;
 
     UltraLightweightHumanDetect(float score_thr = default_score_thr,
                                 float nms_thr = default_nms_thr,

@@ -82,9 +82,9 @@ idf.py -p /dev/ttyUSB0 flash monitor
 例: w40 モデルを使う場合
 ```bash
 idf.py -DIDF_TARGET=esp32s3 \
-  -DSDKCONFIG_DEFAULTS=sdkconfig.bsp.esp32_s3_eye \
-  -DUHD_MODEL_DIR=ultratinyod_anc8_w40_64x64_opencv_inter_nearest_static_nopost \
-  set-target esp32s3
+-DSDKCONFIG_DEFAULTS=sdkconfig.bsp.esp32_s3_eye \
+-DUHD_MODEL_DIR=ultratinyod_anc8_w40_64x64_opencv_inter_nearest_static_nopost \
+set-target esp32s3
 
 idf.py build
 ```

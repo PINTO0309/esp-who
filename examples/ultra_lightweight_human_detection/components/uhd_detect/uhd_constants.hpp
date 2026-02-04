@@ -54,10 +54,38 @@ static inline constexpr float kWhScaleW40[] = {
     13.743571f, 16.26899f,
 };
 
+static inline constexpr float kAnchorsAnc16W32[] = {
+    3.02635658e-06f, 6.46879380e-06f, 6.32300817e-06f, 1.40926313e-05f,
+    8.13052793e-06f, 1.96054280e-05f, 9.71134068e-06f, 2.68001568e-05f,
+    1.17439813e-05f, 3.32903182e-05f, 1.40024895e-05f, 3.99599194e-05f,
+    1.67134622e-05f, 4.57733149e-05f, 1.92088009e-05f, 5.26965669e-05f,
+    2.19081558e-05f, 6.07231996e-05f, 2.55193081e-05f, 6.68508656e-05f,
+    2.98108807e-05f, 7.16103677e-05f, 3.45543995e-05f, 7.66658413e-05f,
+    4.14421411e-05f, 8.07022880e-05f, 4.99125345e-05f, 8.63856039e-05f,
+    6.13213706e-05f, 9.16725039e-05f, 8.26347023e-05f, 9.93725262e-05f,
+};
+
+static inline constexpr float kWhScaleAnc16W32[] = {
+    1.13001645e+00f, 1.17272377e+00f, 1.14395380e+00f, 1.17324901e+00f,
+    1.19282222e+00f, 1.23107517e+00f, 1.13110387e+00f, 1.23999238e+00f,
+    1.23372805e+00f, 1.20248353e+00f, 1.21209586e+00f, 1.20939171e+00f,
+    1.07584357e+00f, 1.15044999e+00f, 1.13603473e+00f, 1.21550882e+00f,
+    1.26873398e+00f, 1.18509626e+00f, 1.06293714e+00f, 1.28947246e+00f,
+    1.13906920e+00f, 1.30407476e+00f, 1.27542281e+00f, 1.19643128e+00f,
+    9.22454536e-01f, 1.31013215e+00f, 1.20553207e+00f, 1.37177920e+00f,
+    1.14782047e+00f, 1.22924173e+00f, 1.34597931e+01f, 1.57487030e+01f,
+};
+
 inline bool get_uhd_anchor_set(const char *model_name, UhdAnchorSet *out)
 {
     if (!model_name || !out) {
         return false;
+    }
+    if (std::strstr(model_name, "anc16") != nullptr) {
+        out->anchors = kAnchorsAnc16W32;
+        out->wh_scale = kWhScaleAnc16W32;
+        out->count = 16;
+        return true;
     }
     if (std::strstr(model_name, "w40") != nullptr) {
         out->anchors = kAnchorsW40;
