@@ -98,7 +98,7 @@ idf.py flash monitor
 - デフォルトは LCD へ検出枠を描画します。
 - LCD が無い場合は `main/app_main.cpp` の `run_detect_lcd()` を `run_detect_term()` に切り替えてください。
 
-https://github.com/user-attachments/assets/887638ce-d938-478b-bf48-55bcd0f42527
+https://github.com/user-attachments/assets/2909447f-6d22-4cdb-a6e4-6b26bfdc6475
 
 ## モデル切り替え
 `components/uhd_detect/CMakeLists.txt` で以下の CMake キャッシュ変数を参照しています。
