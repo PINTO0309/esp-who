@@ -32,6 +32,28 @@ static inline constexpr float kWhScaleW32[] = {
     14.004194f, 15.676925f,
 };
 
+static inline constexpr float kAnchorsAnc8W32Head[] = {
+    2.9374728e-06f, 4.5192883e-06f,
+    7.3883589e-06f, 1.1148886e-05f,
+    9.4902825e-06f, 1.4160189e-05f,
+    1.1525111e-05f, 1.7082701e-05f,
+    1.4235487e-05f, 2.0788382e-05f,
+    1.7850854e-05f, 2.5307343e-05f,
+    2.3048013e-05f, 3.2538472e-05f,
+    3.3668723e-05f, 4.7601916e-05f,
+};
+
+static inline constexpr float kWhScaleAnc8W32Head[] = {
+    1.1238586e+00f, 1.1286219e+00f,
+    1.2017493e+00f, 1.2028668e+00f,
+    1.2400503e+00f, 1.2180042e+00f,
+    1.2185880e+00f, 1.1381067e+00f,
+    1.2016217e+00f, 1.1584322e+00f,
+    1.0664816e+00f, 1.1985004e+00f,
+    1.2543653e+00f, 1.2017742e+00f,
+    1.8601276e+01f, 1.8826843e+01f,
+};
+
 static inline constexpr float kAnchorsW40[] = {
     2.1553853e-06f, 4.8937904e-06f,
     4.3483524e-06f, 7.8692810e-06f,
@@ -80,6 +102,12 @@ inline bool get_uhd_anchor_set(const char *model_name, UhdAnchorSet *out)
 {
     if (!model_name || !out) {
         return false;
+    }
+    if (std::strstr(model_name, "nopost_head") != nullptr) {
+        out->anchors = kAnchorsAnc8W32Head;
+        out->wh_scale = kWhScaleAnc8W32Head;
+        out->count = 8;
+        return true;
     }
     if (std::strstr(model_name, "anc16") != nullptr) {
         out->anchors = kAnchorsAnc16W32;
