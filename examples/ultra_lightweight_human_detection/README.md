@@ -6,8 +6,7 @@
 
 ## サンプルモデル
 ダウンロードして `models/uhd` 配下で解凍。
-1. https://github.com/PINTO0309/UHD/releases/download/onnx/ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost.tar.gz
-2. https://github.com/PINTO0309/UHD/releases/download/onnx/ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost_nolo.tar.gz
+https://github.com/PINTO0309/UHD/releases/download/onnx/ultratinyod_anc8_w32_64x64_opencv_inter_nearest_static_nopost.tar.gz
 
 ```
 esp-who/models
